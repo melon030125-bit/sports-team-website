@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="가상의 축구 구단 SEOUL BLACK FC의 뉴스, 선수, 경기 일정을 만나는 데모 홈페이지.">
+  <title>SEOUL BLACK FC — 우리의 도시, 우리의 경기</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">본문으로 건너뛰기</a>
+  <header class="header">
+    <a class="brand" href="#home" aria-label="서울 블랙 FC 홈"><span class="crest">S<span>B</span></span><span>SEOUL BLACK<small>FOOTBALL CLUB</small></span></a>
+    <button class="menu-toggle" aria-expanded="false" aria-controls="navigation" aria-label="메뉴 열기"><span></span><span></span></button>
+    <nav id="navigation" aria-label="주요 메뉴"><a href="#news">구단 소식</a><a href="#players">선수단</a><a href="#fixtures">경기 일정</a><a class="nav-cta" href="#fixtures">MATCH CENTER <span>↗</span></a></nav>
+  </header>
+  <main id="main">
+    <section class="hero" id="home" aria-labelledby="hero-title">
+      <div class="hero-content"><p class="eyebrow"><span class="dot"></span> SEOUL BLACK FC · EST. 2024</p><h1 id="hero-title">ONE CITY.<br>ONE <span>TEAM.</span></h1><p class="hero-korean">우리의 도시, 우리의 경기.</p><p class="hero-description">휘슬이 울리는 순간, 우리는 하나가 된다.<br>서울의 이름으로, 끝까지 함께.</p><a class="button button-light" href="#fixtures">다음 경기 확인하기 <span>↗</span></a></div>
+      <div class="hero-bottom"><span>SEOUL IS OUR HOME. FOOTBALL IS OUR LIFE.</span><a href="#news">SCROLL TO EXPLORE ↓</a></div>
+      <span class="hero-side" aria-hidden="true">THE PRIDE OF SEOUL</span>
+    </section>
+    <div class="match-strip"><div class="next-label"><span class="eyebrow">NEXT MATCH</span><strong>다음 경기를 준비하라.</strong></div><div class="match-teams"><strong>SEOUL BLACK</strong><span>VS</span><strong>BUSAN WAVE</strong></div><div class="match-info"><strong>11.21 <span>SAT 19:00</span></strong><span>서울 블랙 스타디움 · 홈 경기</span></div><a href="#fixtures" aria-label="경기 일정으로 이동">↗</a></div>
+    <section class="section news-section" id="news" aria-labelledby="news-title">
+      <div class="section-heading"><div><p class="eyebrow">INSIDE THE CLUB</p><h2 id="news-title">LATEST NEWS<span>.</span></h2></div><span class="section-caption">그라운드 안팎, 우리의 이야기</span></div>
+      <div class="news-grid">
+        <article class="news-card"><button class="news-open" data-news="0" aria-label="홈에서 이어갈 승리의 흐름, 뉴스 읽기"><div class="news-image"><img src="https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=900&q=85" alt="조명이 켜진 축구 경기장 관중석" loading="lazy"><span>CLUB NEWS</span></div><div class="news-meta">구단 소식 <time datetime="2026-11-13">2026.11.13</time></div><h3>홈에서 이어갈 승리의 흐름</h3><p>다음 홈 경기를 앞둔 선수단의 각오와 준비.</p><span class="read-more">READ STORY <span>↗</span></span></button></article>
+        <article class="news-card"><button class="news-open" data-news="1" aria-label="90분을 위한 매일의 노력, 뉴스 읽기"><div class="news-image"><img src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=900&q=85" alt="그라운드 위 훈련용 축구공" loading="lazy"><span>TRAINING</span></div><div class="news-meta">트레이닝 <time datetime="2026-11-11">2026.11.11</time></div><h3>90분을 위한 매일의 노력</h3><p>더 빠르게, 더 단단하게. 훈련장의 하루.</p><span class="read-more">READ STORY <span>↗</span></span></button></article>
+        <article class="news-card"><button class="news-open" data-news="2" aria-label="우리의 목소리가 만드는 홈, 뉴스 읽기"><div class="news-image"><img src="https://images.unsplash.com/photo-1459865264687-595d652de67e?auto=format&fit=crop&w=900&q=85" alt="축구 경기장과 관중석 전경" loading="lazy"><span>WITH FANS</span></div><div class="news-meta">팬 스토리 <time datetime="2026-11-09">2026.11.09</time></div><h3>우리의 목소리가 만드는 홈</h3><p>첫 휘슬부터 마지막 순간까지, 함께하는 이유.</p><span class="read-more">READ STORY <span>↗</span></span></button></article>
+      </div>
+    </section>
+    <section class="players-section" id="players" aria-labelledby="players-title"><div class="section players-inner"><div class="players-intro"><p class="eyebrow">THE BLACK SQUAD</p><h2 id="players-title">이 이름을<br>기억하라<span>.</span></h2><p>서로 다른 강점, 하나의 목표.<br>서울의 자부심을 위해 뛰는 선수들.</p><span class="squad-season">2026 SEASON / FIRST TEAM</span></div><div class="players-grid"><article class="player"><span class="player-number">07</span><div class="jersey" aria-hidden="true"><span>SEOUL<br><b>7</b></span></div><div class="player-details"><span>FORWARD</span><h3>이준서 <small>LEE JUNSEO</small></h3><p>공간을 가르는 스피드, 승부를 바꾸는 한 골.</p></div></article><article class="player"><span class="player-number">10</span><div class="jersey alternate" aria-hidden="true"><span>SEOUL<br><b>10</b></span></div><div class="player-details"><span>MIDFIELDER · CAPTAIN</span><h3>김도윤 <small>KIM DOYUN</small></h3><p>경기의 흐름을 읽고, 팀의 중심을 지킨다.</p></div></article></div></div></section>
+    <section class="section fixtures-section" id="fixtures" aria-labelledby="fixtures-title"><div class="section-heading"><div><p class="eyebrow">READY FOR THE NEXT</p><h2 id="fixtures-title">MATCH SCHEDULE<span>.</span></h2></div><div class="filters" role="group" aria-label="경기 일정 필터"><button class="active" data-filter="all" aria-pressed="true">전체</button><button data-filter="home" aria-pressed="false">홈</button><button data-filter="away" aria-pressed="false">원정</button></div></div><div class="fixtures-list">
+      <article class="fixture" data-venue="home"><div class="fixture-date"><strong>21</strong><span>NOV · SAT</span></div><span class="venue home">HOME</span><div class="fixture-opponent"><strong>SEOUL BLACK <span>vs</span> BUSAN WAVE</strong><p>서울 블랙 스타디움</p></div><time datetime="2026-11-21T19:00:00+09:00">19:00</time><span class="fixture-status">경기 예정</span></article>
+      <article class="fixture" data-venue="away"><div class="fixture-date"><strong>28</strong><span>NOV · SAT</span></div><span class="venue">AWAY</span><div class="fixture-opponent"><strong>INCHEON CITY <span>vs</span> SEOUL BLACK</strong><p>인천 시티 아레나</p></div><time datetime="2026-11-28T16:00:00+09:00">16:00</time><span class="fixture-status">경기 예정</span></article>
+      <article class="fixture" data-venue="home"><div class="fixture-date"><strong>05</strong><span>DEC · SAT</span></div><span class="venue home">HOME</span><div class="fixture-opponent"><strong>SEOUL BLACK <span>vs</span> DAEGU UNITED</strong><p>서울 블랙 스타디움</p></div><time datetime="2026-12-05T19:00:00+09:00">19:00</time><span class="fixture-status">경기 예정</span></article>
+    </div><p class="schedule-note">가상 구단의 데모 일정입니다. 모든 구단명, 선수 및 소식은 예시 콘텐츠입니다.</p></section>
+    <section class="closing"><p>OUR CITY. OUR PRIDE.</p><strong>WE ARE SEOUL BLACK.</strong><a href="#home">BACK TO TOP ↑</a></section>
+  </main>
+  <footer><a class="footer-brand" href="#home">SEOUL BLACK FC<span>서울과 함께, 끝까지.</span></a><p>© <span id="year">2026</span> SEOUL BLACK FC. DEMO WEBSITE.</p></footer>
+  <dialog id="news-dialog" aria-labelledby="dialog-title"><div class="dialog-top"><span class="eyebrow">CLUB STORIES</span><button id="close-dialog" aria-label="뉴스 닫기">✕</button></div><h2 id="dialog-title"></h2><p id="dialog-body"></p><p class="demo-note">가상 구단 홈페이지를 위한 예시 기사입니다.</p></dialog>
+</body>
+</html>
