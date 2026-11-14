@@ -1,0 +1,66 @@
+name: Update Chelsea football data
+
+on:
+  schedule:
+    # GitHub cron is UTC: 21:00 UTC = next day 06:00 KST.
+    - cron: '0 21 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: chelsea-data-update
+  cancel-in-progress: false
+
+jobs:
+  configuration:
+    runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.check.outputs.ready }}
+    steps:
+      - id: check
+        name: Gate updates without exposing secrets
+        env:
+          ENABLED: ${{ vars.CHELSEA_DATA_UPDATES_ENABLED }}
+          API_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+          LEAGUE_ID: ${{ vars.FOOTBALL_LEAGUE_ID }}
+          TEAM_ID: ${{ vars.FOOTBALL_TEAM_ID }}
+        shell: bash
+        run: |
+          if [[ "$ENABLED" == "true" && -n "$API_KEY" && "$LEAGUE_ID" =~ ^[1-9][0-9]*$ && "$TEAM_ID" =~ ^[1-9][0-9]*$ ]]; then
+            echo 'ready=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'ready=false' >> "$GITHUB_OUTPUT"
+            echo '::notice::Updates disabled or configuration incomplete. No provider calls or data changes.'
+          fi
+
+  update:
+    needs: configuration
+    if: needs.configuration.outputs.ready == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate code and data logic offline
+        run: node js/verify-season.mjs
+      - name: Collect and validate provider data
+        env:
+          CHELSEA_DATA_UPDATES_ENABLED: 'true'
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+          FOOTBALL_LEAGUE_ID: ${{ vars.FOOTBALL_LEAGUE_ID }}
+          FOOTBALL_TEAM_ID: ${{ vars.FOOTBALL_TEAM_ID }}
+        run: node scripts/update-chelsea-data.mjs
+      - name: Commit only refreshed football JSON
+        shell: bash
+        run: |
+          git add -- data/season-report.json data/player-stats.json data/injuries.json data/football-feed.json
+          if ! git diff --cached --quiet; then
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Update Chelsea football data'
+            git push
+          fi

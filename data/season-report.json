@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "snapshotId": "manual-2026-11-13",
+  "season": "2026/27",
+  "updatedAt": null,
+  "updateState": "not-configured",
+  "standings": { "status": "unverified", "rows": [], "source": null },
+  "teamMetrics": { "fouls": null, "yellowCards": null, "redCards": null, "cleanSheets": null },
+  "form": []
+}

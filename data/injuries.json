@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "snapshotId": "manual-2026-11-13",
+  "season": "2026/27",
+  "updatedAt": null,
+  "status": "unverified",
+  "complete": false,
+  "current": [],
+  "history": [
+    { "playerId": "reece-james", "reportedAt": "2026-10-16", "reason": "수술·재활 시작에 대한 과거 공식 공지. 현재 부상 여부와 복귀일은 미확인입니다.", "longTerm": null, "returnDate": null, "source": "https://www.chelseafc.com/en/news/article/injury-update-reece-james" }
+  ]
+}

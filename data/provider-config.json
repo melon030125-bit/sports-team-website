@@ -1,0 +1,10 @@
+{
+  "provider": "api-football",
+  "season": 2026,
+  "leagueId": null,
+  "teamId": null,
+  "playerIds": {},
+  "fixtureIds": {},
+  "maxPlayerPages": 10,
+  "maxLineupFixtures": 3
+}
