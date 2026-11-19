@@ -1,6 +1,6 @@
 import { escapeHtml as e, safeUrl, dateParts, formatKickoff, matchDate, getNextMatch, matchOutcome, resultClass, normalize } from './utils.js';
 import { renderMatch, mountMatch } from './match.js';
-import { renderSeasonReport } from './season-report.js';
+import { renderSeasonReport, summarizeLeague } from './season-report.js';
 
 const main = document.querySelector('#main');
 const page = document.body.dataset.page;
@@ -44,11 +44,11 @@ main.addEventListener('error', event => {
 }, true);
 
 function playerCard(player) {
-  return `<a class="player-card" href="${playerUrl(player)}"><div class="player-visual">${photo(player.image, player.imageAlt)}<span class="portrait-fallback" aria-hidden="true">CFC</span><span class="player-number" aria-hidden="true">${e(String(player.number).padStart(2, '0'))}</span><span class="player-initials">${e(player.en.split(' ').map(word => word[0]).join(''))}</span></div><div class="player-info"><span class="eyebrow">${e(groupNames[player.group])}</span><h3>${e(player.ko)}</h3><p lang="en">${e(player.en)}</p><small>${e(player.position)}</small></div></a>`;
+  return `<a class="player-card" href="${playerUrl(player)}"><div class="player-visual">${photo(player.image, player.imageAlt)}<span class="portrait-fallback" aria-hidden="true">CFC</span><span class="player-number" aria-hidden="true">${e(String(player.number).padStart(2, '0'))}</span></div><div class="player-info"><span class="eyebrow">${e(groupNames[player.group])}</span><h3 lang="en">${e(player.en)}</h3><p>${e(player.ko)}</p><small>${e(player.position)}</small></div></a>`;
 }
 
 function newsCard(article, index = 0) {
-  return `<article class="news-card"><a href="${articleUrl(article)}"><div class="news-art news-art-${index % 3}"><span class="news-fallback" aria-hidden="true">THE BLUES</span>${photo(storyPhoto(article), article.imageAlt || data.media?.hero.alt)}<small>INSIDE CHELSEA / ${e(article.category)}</small></div><div class="news-card-body"><p class="news-meta"><span>${e(article.category)}</span><time datetime="${e(article.date)}">${e(article.date)}</time></p><h3>${e(article.title)}</h3><p>${e(article.summary)}</p><span class="text-link">기사 읽기 ↗</span></div></a></article>`;
+  return `<article class="news-card"><a href="${articleUrl(article)}"><div class="news-art news-art-${index % 3}"><span class="news-fallback" aria-hidden="true">THE BLUES</span>${photo(storyPhoto(article), article.imageAlt || data.media?.hero.alt)}</div><div class="news-card-body"><p class="news-meta"><span>${e(article.category)}</span><time datetime="${e(article.date)}">${e(article.date)}</time></p><h3>${e(article.title)}</h3><p>${e(article.summary)}</p></div></a></article>`;
 }
 
 function matchRow(match) {
@@ -57,13 +57,13 @@ function matchRow(match) {
   const home = match.venue === 'home';
   const finished = match.status === 'finished';
   const status = { scheduled: '경기 예정', finished: matchOutcome(match), unknown: '결과 확인 중', postponed: '연기' }[match.status] || '확인 중';
-  return `<article class="fixture-row venue-${home ? 'home' : 'away'}" id="${e(match.id)}" data-match-id="${e(match.id)}"><div class="fixture-day"><strong>${e(parts?.day || match.date?.slice(-2) || '—')}</strong><span>${e(matchDate(match).slice(0, 7))}${parts ? ` · ${e(parts.weekday)}` : localDateOnly ? ' · 영국 현지' : ''}</span></div><div class="fixture-teams"><p class="fixture-meta">${venueBadge(match)} <span class="competition-name">${e(match.competition)}</span>${match.tentative ? ' · 잠정 편성' : ''}</p><h3><a class="fixture-detail-link" href="${matchUrl(match)}">${home ? '첼시' : e(match.opponent)} <span>vs</span> ${home ? e(match.opponent) : '첼시'}</a></h3><a class="match-detail-link" href="${matchUrl(match)}">경기 상세 · 선발 · 기록 ↗</a><p>${home ? 'Stamford Bridge' : `${e(match.opponent)} 원정`}</p></div><div class="fixture-time">${finished ? `<div class="fixture-result">${scoreline(match)}</div>${outcomeBadge(match)}` : `<strong>${parts ? `${parts.hour}:${parts.minute}` : '시간 미정'}</strong><span>${localDateOnly ? '한국 날짜·시간 미정' : `KST · ${e(status)}`}</span>`}${match.penalties ? `<small class="penalty-note">${e(match.penalties)} · 본 경기 점수와 별도</small>` : ''}${parts ? `<small>${finished ? `KST ${parts.hour}:${parts.minute} · ` : ''}영국 ${e(formatKickoff(match.kickoff, 'Europe/London'))}</small>` : ''}${source(match)}</div></article>`;
+  return `<article class="fixture-row venue-${home ? 'home' : 'away'}" id="${e(match.id)}" data-match-id="${e(match.id)}"><div class="fixture-day"><small class="matchday-label">MATCHDAY</small><strong>${e(parts?.day || match.date?.slice(-2) || '—')}</strong><span>${e(matchDate(match).slice(0, 7))}${parts ? ` · ${e(parts.weekday)}` : localDateOnly ? ' · 영국 현지' : ''}</span></div><div class="fixture-teams"><p class="fixture-meta">${venueBadge(match)} <span class="competition-name">${e(match.competition)}</span>${match.tentative ? ' · 잠정 편성' : ''}</p><h3><a class="fixture-detail-link" href="${matchUrl(match)}">${home ? '첼시' : e(match.opponent)} <span>vs</span> ${home ? e(match.opponent) : '첼시'}</a></h3><a class="match-detail-link" href="${matchUrl(match)}">경기 상세 · 선발 · 기록 ↗</a><p>${home ? 'Stamford Bridge' : `${e(match.opponent)} 원정`}</p></div><div class="fixture-time">${finished ? `<div class="fixture-result">${scoreline(match)}</div>${outcomeBadge(match)}` : `<strong>${parts ? `${parts.hour}:${parts.minute}` : '시간 미정'}</strong><span>${localDateOnly ? '한국 날짜·시간 미정' : `KST · ${e(status)}`}</span>`}${match.penalties ? `<small class="penalty-note">${e(match.penalties)} · 본 경기 점수와 별도</small>` : ''}${parts ? `<small>${finished ? `KST ${parts.hour}:${parts.minute} · ` : ''}영국 ${e(formatKickoff(match.kickoff, 'Europe/London'))}</small>` : ''}${source(match)}</div></article>`;
 }
 
 function nextCard(match) {
   if (!match) return `<section class="next-match">${empty('확인된 다음 경기가 없습니다. 공식 일정에서 확인해 주세요.')}</section>`;
   const parts = dateParts(match.kickoff);
-  return `<section class="next-match venue-${match.venue}" aria-labelledby="next-heading"><div class="match-label"><span class="eyebrow" id="next-heading">NEXT MATCH · 다음 경기</span>${venueBadge(match)}<span>${e(match.competition)}${match.tentative ? ' · 잠정' : ''}</span></div><div class="match-teams"><div><span class="team-monogram" aria-hidden="true">CFC</span><strong>첼시<small lang="en">CHELSEA</small></strong></div><span>VS</span><div><span class="team-monogram opponent-mark" aria-hidden="true">${e(match.opponent.slice(0, 1))}</span><strong>${e(match.opponent)}</strong></div></div><p class="match-kickoff"><time datetime="${e(match.kickoff)}">${parts.month}.${parts.day} <span>(${parts.weekday})</span> ${parts.hour}:${parts.minute}</time> <small>KST</small></p><p class="match-sub">${parts.hour === '00' && parts.minute === '00' ? '전날 밤에서 넘어가는 자정 · ' : ''}${match.venue === 'home' ? 'Stamford Bridge' : '원정 경기'}<br>영국 ${e(formatKickoff(match.kickoff, 'Europe/London'))}</p><div class="match-actions"><a class="button button-light" href="${matchUrl(match)}">경기 상세 확인 ↗</a>${link(match.source, '공식 경기 안내')}</div></section>`;
+  return `<section class="next-match venue-${match.venue}" aria-labelledby="next-heading"><div class="match-label"><span class="eyebrow" id="next-heading"><span class="editorial-index" aria-hidden="true">01</span> NEXT MATCH · 다음 경기</span>${venueBadge(match)}<span>${e(match.competition)}${match.tentative ? ' · 잠정' : ''}</span></div><div class="match-teams"><div><img class="match-crest" src="data/images/chelsea-crest.png" width="46" height="46" alt=""><strong>첼시<small lang="en">CHELSEA</small></strong></div><span>VS</span><div><strong>${e(match.opponent)}</strong></div></div><p class="match-kickoff"><time datetime="${e(match.kickoff)}"><span>${parts.month}.${parts.day} (${parts.weekday})</span><strong>${parts.hour}:${parts.minute}</strong></time> <small>KST</small></p><p class="match-sub">${parts.hour === '00' && parts.minute === '00' ? '전날 밤에서 넘어가는 자정 · ' : ''}${e(match.stadium || (match.venue === 'home' ? 'Stamford Bridge' : '경기장 정보 미확인'))}<br>영국 ${e(formatKickoff(match.kickoff, 'Europe/London'))}</p><div class="match-actions"><a class="button button-light" href="${matchUrl(match)}">MATCH CENTRE ↗</a>${link(match.source, '공식 경기 안내')}</div></section>`;
 }
 
 function seasonFacts() {
@@ -75,9 +75,64 @@ function home() {
   const recent = data.matches.filter(match => match.status === 'finished').sort((a, b) => (b.kickoff || b.date).localeCompare(a.kickoff || a.date))[0];
   const featureOrder = ['cole-palmer', 'morgan-rogers', 'joao-pedro', 'moises-caicedo', 'reece-james', 'levi-colwill', 'estevao-willian', 'mike-penders'];
   const featured = data.players.filter(player => player.featured).sort((a, b) => featureOrder.indexOf(a.id) - featureOrder.indexOf(b.id));
-  const latest = data.articles[0];
-  main.innerHTML = `<div class="container"><div class="home-stage">${photo(data.media?.hero.image, data.media?.hero.alt, true)}<header class="home-heading"><p class="hero-wordmark" aria-hidden="true">FOREVER<br>BLUE.</p><div><p class="eyebrow">A LITTLE CLOSER TO THE BRIDGE</p><h1>우리의 밤은, <span>첼시 블루.</span></h1></div><p>CHELSEA FC <b>2026/27</b><span>한국 팬을 위한 시즌 가이드</span></p></header>${nextCard(next)}</div><div class="home-summary"><div class="dashboard-side"><section class="result-card venue-${recent?.venue || 'home'}"><p class="eyebrow">LAST MATCH · 최근 결과</p>${recent ? `<h2>${recent.venue === 'home' ? '첼시' : e(recent.opponent)} <span class="result-score">${scoreline(recent)}</span> ${recent.venue === 'home' ? e(recent.opponent) : '첼시'}</h2><p>${venueBadge(recent)} ${e(matchDate(recent))} · ${e(recent.competition)} · ${outcomeBadge(recent)}</p><a class="text-link" href="${matchUrl(recent)}">경기 결과 보기 ↗</a>` : '<p>확인된 결과가 없습니다.</p>'}</section><section class="season-card"><p class="eyebrow">SEASON 2026/27</p>${seasonFacts()}</section></div></div><section class="quick-players" aria-label="핵심 선수 빠르게 보기"><span class="eyebrow">PLAYERS TO KNOW<br>이번 시즌 주목할 이름</span>${featured.slice(0, 4).map(player => `<a class="quick-player" href="${playerUrl(player)}"><span class="quick-portrait">${photo(player.image, '')}<b class="quick-number">${e(player.number)}</b></span><span class="quick-name"><strong>${e(player.ko)}</strong><small lang="en">${e(player.en)}</small></span></a>`).join('')}</section>${latest ? `<div class="headline-bar"><span class="badge">주요 뉴스</span><a href="${articleUrl(latest)}">${e(latest.title)} <span>↗</span></a></div>` : ''}<p class="verification-note">${e(data.season.checkedAt)} KST 확인 자료 · 자동 갱신되지 않습니다. 일정은 변경될 수 있습니다.</p><section class="section">${heading('LATEST STORIES', '블루스의 지금', 'news.html', '모든 뉴스')}<div class="news-grid">${data.articles.slice(0, 3).map(newsCard).join('')}</div></section><section class="section">${heading('MEET THE BLUES', '이번 시즌, 기억할 이름', 'squad.html', '전체 선수단')}<p class="lede">처음 보는 팬을 위한 8명의 이야기. 공식 순위나 베스트 11이 아닌 편집 추천입니다.</p><div class="players-grid">${featured.map(playerCard).join('')}</div></section><section class="section">${heading('ON THE HORIZON', '다가오는 90분', 'matches.html', '시즌 전체 일정')}<div class="fixture-list">${data.matches.filter(match => match.status === 'scheduled' && match.kickoff && Date.parse(match.kickoff) > Date.parse(data.season.asOf)).sort((a, b) => a.kickoff.localeCompare(b.kickoff)).slice(0, 3).map(matchRow).join('')}</div></section><section class="guide-banner"><p class="eyebrow">NEW TO CHELSEA?</p><h2>처음이어도, 같은 블루.</h2><p>경기 보는 법부터 브리지에 가는 길까지.<br>한국 팬의 시선으로 차근차근 안내합니다.</p><a class="button button-light" href="korean-guide.html">한국 팬 가이드 ↗</a><a class="text-link" href="club.html">1905년부터 이어진 이야기 ↗</a></section></div>`;
+  const { summary, form } = summarizeLeague(data.matches, data.season.asOf);
+  const recentForm = form.map(({ result }) => {
+    const label = { W: '승리', D: '무승부', L: '패배' }[result];
+    return `<abbr title="${label}" aria-label="${label}" class="form-${result}">${result}</abbr>`;
+  }).join('');
+  const upcoming = data.matches.filter(match =>
+    match.status === 'scheduled' && match.kickoff && Date.parse(match.kickoff) > Date.parse(data.season.asOf)
+  ).sort((a, b) => a.kickoff.localeCompare(b.kickoff)).slice(0, 3);
+  main.innerHTML = `<div class="container">
+    <div class="home-stage">
+      ${photo(data.media?.hero.image, data.media?.hero.alt, true)}
+      <header class="home-heading">
+        <p class="hero-edition"><span>LONDON / SEOUL</span><span>CHELSEA FC / 2026—27</span></p>
+        <h1>우리의 밤은,<br><span>첼시 블루.</span></h1>
+        <p class="hero-translation" lang="en">OUR NIGHT<br>IS CHELSEA BLUE.</p>
+      </header>
+    </div>
+    ${nextCard(next)}
+    <div class="home-summary"><div class="dashboard-side">
+      <section class="result-card venue-${recent?.venue || 'home'}">
+        <p class="eyebrow">LAST MATCH · 최근 결과</p>
+        ${recent ? `<h2>${recent.venue === 'home' ? '첼시' : e(recent.opponent)} <span class="result-score">${scoreline(recent)}</span> ${recent.venue === 'home' ? e(recent.opponent) : '첼시'}</h2>
+        <p>${venueBadge(recent)} ${e(matchDate(recent))} · ${e(recent.competition)} · ${outcomeBadge(recent)}</p>
+        <a class="text-link" href="${matchUrl(recent)}">경기 결과 보기 ↗</a>` : '<p>확인된 결과가 없습니다.</p>'}
+      </section>
+      <section class="season-card home-season">
+        ${heading('02 / PREMIER LEAGUE', '시즌 스냅샷', 'season-report.html', '시즌 리포트')}
+        <dl class="snapshot-metrics">
+          <div><dt>득점</dt><dd>${summary?.goalsFor ?? '–'}</dd></div>
+          <div><dt>실점</dt><dd>${summary?.goalsAgainst ?? '–'}</dd></div>
+          <div><dt>최근 폼</dt><dd class="snapshot-form">${recentForm || '–'}</dd></div>
+        </dl>
+        ${seasonFacts()}
+      </section>
+    </div></div>
+    <p class="verification-note">${e(data.season.checkedAt)} KST 확인 자료 · 자동 갱신되지 않습니다. 일정은 변경될 수 있습니다.</p>
+    <section class="section">
+      ${heading('03 / LATEST STORIES', '블루스의 지금', 'news.html', '모든 뉴스')}
+      <div class="news-grid">${data.articles.slice(0, 3).map(newsCard).join('')}</div>
+    </section>
+    <section class="section">
+      ${heading('04 / SQUAD', '이번 시즌, 기억할 이름', 'squad.html', '전체 선수단')}
+      <p class="lede">처음 보는 팬을 위한 8명의 이야기. 공식 순위나 베스트 11이 아닌 편집 추천입니다.</p>
+      <div class="players-grid">${featured.map(playerCard).join('')}</div>
+    </section>
+    <section class="section">
+      ${heading('ON THE HORIZON', '다가오는 90분', 'matches.html', '시즌 전체 일정')}
+      <div class="fixture-list">${upcoming.map(matchRow).join('')}</div>
+    </section>
+    <section class="guide-banner">
+      <p class="eyebrow">05 / FROM THE BRIDGE</p><h2>처음이어도, 같은 블루.</h2>
+      <p>경기 보는 법부터 브리지에 가는 길까지.<br>한국 팬의 시선으로 차근차근 안내합니다.</p>
+      <a class="button button-light" href="korean-guide.html">한국 팬 가이드 ↗</a>
+      <a class="text-link" href="club.html">1905년부터 이어진 이야기 ↗</a>
+    </section>
+  </div>`;
 }
+
 
 function squad() {
   main.innerHTML = `<div class="container">${intro('THE SQUAD', '블루를 입은 이름들', '남자 선수 공식 프로필 기준 30명. 등록 명단이나 당일 출전 가능 명단과는 다릅니다.')}<form class="toolbar" id="squad-form" role="search"><label class="field">선수 검색<input name="query" type="search" placeholder="한글·영문 이름 또는 등번호" autocomplete="off"></label><label class="field">포지션<select name="group"><option value="all">전체 포지션</option>${Object.entries(groupNames).map(([key, name]) => `<option value="${key}">${name}</option>`).join('')}</select></label><button class="button button-outline" type="reset">초기화</button></form><p class="results-count" id="squad-count" role="status"></p><div class="players-grid" id="squad-results"></div><section class="section">${heading('LEADERSHIP', '팀을 이끄는 사람들')}<div class="info-card">${seasonFacts()}<p>구단 주장과 개별 경기에서 완장을 차는 선수는 다를 수 있습니다. 주장 대행을 고정 서열로 표시하지 않습니다.</p>${source(data.season)}</div></section></div>`;
